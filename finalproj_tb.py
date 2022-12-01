@@ -26,6 +26,8 @@ def make_database(db_name):
     cur = conn.cursor()
     return cur, conn
 
+    print("hello")
+
 # ''' create recipes table
 #     -serial id
 #     -item name
