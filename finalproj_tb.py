@@ -26,8 +26,7 @@ def make_database(db_name):
     cur = conn.cursor()
     return cur, conn
 
-    print("hello")
-
+   
 # ''' create recipes table
 #     -serial id
 #     -item name
@@ -39,14 +38,15 @@ def make_database(db_name):
     #   }
 # '''
 def create_recipes_table(cur, conn):
-    cur.execute("DROP TABLE IF EXISTS recipes")
-    cur.execute("CREATE TABLE IF NOT EXISTS recipes (item_id INTEGER PRIMARY KEY, name TEXT, materials TEXT?????? count INTEGER, availability TEXT)")
-conn.commit()
+#     cur.execute("CREATE TABLE IF NOT EXISTS recipes (item_id INTEGER PRIMARY KEY, name TEXT, materials_num INTEGER, availability ?)")
+    pass
 
+# villager availability should reference rishmas villager type id
 
 
 def main():
-    # SETUP DATABASE AND TABLE
     cur, conn = make_database('acnh.db')
     create_recipes_table(cur, conn)
     get_recipes(api_key)
+
+main()
