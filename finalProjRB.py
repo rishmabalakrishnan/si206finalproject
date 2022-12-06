@@ -56,41 +56,48 @@ def create_species_table(cur, conn, villagers_dict, total_count):
                 cur.execute("INSERT OR IGNORE INTO Species (id,species) VALUES (?,?)",(i,species_list[i]))
                 conn.commit()
                 new_count += 1
-    print(new_count)
+    # print(new_count)
     return new_count
 
 def create_villagers_table(cur, conn, villagers_dict, total_count):
+    new_count = 0
     cur.execute("CREATE TABLE IF NOT EXISTS Villagers (villager_id INTEGER PRIMARY KEY, name TEXT, personality_id INTEGER, birthday TEXT, species_id INTEGER, gender INTEGER, catchphrase TEXT)")
     conn.commit()
+    cur.execute("SELECT COUNT(*) FROM Villagers")
+    villagers_count = cur.fetchone()[0]
     for villager in villagers_dict:
         # print(villagers_dict[villager])
         villager_id = villagers_dict[villager]['id']
+        if (villager_id in range(villagers_count, len(villagers_dict) + 1)) and (total_count + new_count < 25):
+            
         # print(villager_id)
-        name = villagers_dict[villager]['name']['name-USen']
+            name = villagers_dict[villager]['name']['name-USen']
         # print(name)
-        personality = villagers_dict[villager]['personality']
-        cur.execute('SELECT id FROM Personalities WHERE Personalities.personality = "' + personality + '"')
-        for row in cur:
-            personality_id = row[0]
+            personality = villagers_dict[villager]['personality']
+            cur.execute('SELECT id FROM Personalities WHERE Personalities.personality = "' + personality + '"')
+            for row in cur:
+                personality_id = row[0]
         # print(personality)
-        birthday = villagers_dict[villager]['birthday']
+            birthday = villagers_dict[villager]['birthday']
         # note: birthday is in the format d/m
         # print(birthday)
-        species = villagers_dict[villager]['species']
-        cur.execute('SELECT id FROM Species WHERE Species.species = "' + species + '"')
-        for row in cur:
-            species_id = row[0]
+            species = villagers_dict[villager]['species']
+            cur.execute('SELECT id FROM Species WHERE Species.species = "' + species + '"')
+            for row in cur:
+                species_id = row[0]
         # print(species)
-        gender = villagers_dict[villager]['gender']
-        if gender == 'Male':
-            gender = 0
-        else:
-            gender = 1
+            gender = villagers_dict[villager]['gender']
+            if gender == 'Male':
+                gender = 0
+            else:
+                gender = 1
         # print(gender)
-        catchphrase = villagers_dict[villager]['catch-phrase']
+            catchphrase = villagers_dict[villager]['catch-phrase']
         # print(catchphrase)
-        cur.execute('INSERT OR IGNORE INTO Villagers (villager_id, name, personality_id, birthday, species_id, gender, catchphrase) VALUES (?, ?, ?, ?, ?, ?, ?)', (villager_id, name, personality_id, birthday, species_id, gender, catchphrase))
-        conn.commit()
+            cur.execute('INSERT OR IGNORE INTO Villagers (villager_id, name, personality_id, birthday, species_id, gender, catchphrase) VALUES (?, ?, ?, ?, ?, ?, ?)', (villager_id, name, personality_id, birthday, species_id, gender, catchphrase))
+            conn.commit()
+            new_count += 1
+    return new_count
 
 def get_fish():
     r = requests.get("https://acnhapi.com/v1/fish").text
@@ -98,6 +105,7 @@ def get_fish():
     return fish_dict
 
 def create_location_table(cur, conn, fish_dict, total_count):
+    new_count = 0
     locations_list = []
     for fish in fish_dict:
         location = fish_dict[fish]['availability']['location'].split()[0]
@@ -107,6 +115,7 @@ def create_location_table(cur, conn, fish_dict, total_count):
     for i in range(len(locations_list)):
         cur.execute("INSERT OR IGNORE INTO Locations (id,location) VALUES (?,?)",(i,locations_list[i]))
     conn.commit()
+    return new_count
 
 def create_rarity_table(cur, conn, fish_dict, total_count):
     rarity_list = []
@@ -153,13 +162,14 @@ def main():
     # fish_count = cur.fetchone()[0]
     # total_count = personalities_count + species_count + villagers_count + locations_count + rarities_count + fish_count
     villagers_dict = get_villagers()
+    print(len(villagers_dict))
     total_count = 0
     # maybe pass in total_count to all functions that add to the database and after every successful entry, increment total_count? then stop execution once total_count is 25
     total_count += create_personalities_table(cur, conn, villagers_dict, total_count)
     # print(total_count)
     total_count += create_species_table(cur, conn, villagers_dict, total_count)
     # print(total_count)
-    create_villagers_table(cur, conn, villagers_dict, total_count)
+    total_count += create_villagers_table(cur, conn, villagers_dict, total_count)
     fish_dict = get_fish()
     create_location_table(cur, conn, fish_dict, total_count)
     create_rarity_table(cur, conn, fish_dict, total_count)
