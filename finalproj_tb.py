@@ -7,7 +7,6 @@ import requests
 
 api_key = "9d6fafde-d754-4e78-bdc3-1ff0e16d85d1"
 
-
 def get_recipes(api_key):
   
     header ={'X-API-KEY': api_key, 'Accept-Version': '1.0.0'}
@@ -18,35 +17,90 @@ def get_recipes(api_key):
 
     return recipes_dict
 
-    # do i need to cache my file since my data structure is so long?
-
 def make_database(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
     conn = sqlite3.connect(path+'/'+db_name)
     cur = conn.cursor()
     return cur, conn
 
-   
-# ''' create recipes table
-#     -serial id
-#     -item name
-#     -availability ['from']
-#      "materials": [
-    #   {
-    #     "name": "wood",
-    #     "count": 10
-    #   }
-# '''
 def create_recipes_table(cur, conn):
-#     cur.execute("CREATE TABLE IF NOT EXISTS recipes (item_id INTEGER PRIMARY KEY, name TEXT, materials_num INTEGER, availability ?)")
-    pass
+    cur.execute("DROP TABLE IF EXISTS recipes")
+    cur.execute("CREATE TABLE IF NOT EXISTS recipes (item_id INTEGER PRIMARY KEY, name TEXT, sell_price INTEGER, wood INTEGER, hardwood INTEGER, softwood INTEGER, stone INTEGER, iron_nugget INTEGER, clay INTEGER, tree_branch INTEGER, other INTEGER)")
 
-# villager availability should reference rishmas villager type id
+    conn.commit()
+
+def add_recipes_to_table (recipes_dict, cur, conn):
+    
+    for recipe in recipes_dict:
+        item_id = recipe["serial_id"]
+        name = recipe["name"]
+
+    # exclude wallpaper, flooring, wreaths, wands
+        if "wall" in name or "flooring" in name or "wreath" in name or "wand" in name:
+            continue
+
+        # if "flooring" in recipe["name"]:
+        #     continue
+
+        # if "wreath" in recipe["name"]:
+        #     continue
+
+        # if "wand" in recipe["name"]:
+        #     continue
+
+        sell_price = recipe["sell"]
+
+        for material in recipe["materials"]:
+            if material["name"] == "wood":
+                wood = material["count"]
+            else:
+                wood = 0
+            
+        # for material in recipe["materials"]:
+            if material["name"] == "hardwood":
+                hardwood = material["count"]
+            else:
+                hardwood = 0
+
+            if material["name"] == "softwood":
+                softwood = material["count"]
+            else:
+                softwood = 0
+
+            if material["name"] == "stone":
+                stone = material["count"]
+            else:
+                stone = 0
+            
+            if material["name"] == "iron nugget":
+                iron_nugget = material["count"]
+            else:
+                iron_nugget = 0
+
+            if material["name"] == "clay":
+                clay = material["count"]
+            else:
+                clay = 0
+
+            if material["name"] == "tree branch":
+                tree_branch = material["count"]
+            else:
+                tree_branch = 0
+
+
+            material_list= ["wood", "hardwood", "softwood", "tree_branch", "clay", "iron_nugget", "stone"]
+            if material["name"] not in material_list:
+                continue
+            
+            # print(f'{name} {item_id} = {wood} wood, {tree_branch} branch, {stone} stone, {iron_nugget} nugget {hardwood} hardwood, {clay} clay {softwood} softwood')
+            # cur.execute("INSERT OR IGNORE INTO recipes (item_id, name, sell_price, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch, other) VALUES (?,?,?,?,?,?,?,?,?,?)",(item_id, name, sell_price, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch, other))
+        # conn.commit()
 
 
 def main():
     cur, conn = make_database('acnh.db')
     create_recipes_table(cur, conn)
-    get_recipes(api_key)
+    recipes_dict = get_recipes(api_key)
+    add_recipes_to_table(recipes_dict, cur, conn)
 
 main()
