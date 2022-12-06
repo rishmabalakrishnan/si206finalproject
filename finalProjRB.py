@@ -112,39 +112,65 @@ def create_location_table(cur, conn, fish_dict, total_count):
         if location not in locations_list:
             locations_list.append(location)
     cur.execute("CREATE TABLE IF NOT EXISTS Locations (id INTEGER PRIMARY KEY, location TEXT UNIQUE)")
-    for i in range(len(locations_list)):
-        cur.execute("INSERT OR IGNORE INTO Locations (id,location) VALUES (?,?)",(i,locations_list[i]))
     conn.commit()
+    cur.execute("SELECT COUNT(*) FROM Locations")
+    locations_count = cur.fetchone()[0]
+    if locations_count < len(locations_list):
+        for i in range(locations_count, len(locations_list)):
+            if total_count + new_count < 25:
+                cur.execute("INSERT OR IGNORE INTO Locations (id,location) VALUES (?,?)",(i,locations_list[i]))
+                conn.commit()
+                new_count += 1
+            else:
+                quit()
     return new_count
 
 def create_rarity_table(cur, conn, fish_dict, total_count):
+    new_count = 0
     rarity_list = []
     for fish in fish_dict:
         rarity = fish_dict[fish]['availability']['rarity']
         if rarity not in rarity_list:
             rarity_list.append(rarity)
     cur.execute("CREATE TABLE IF NOT EXISTS Rarities (id INTEGER PRIMARY KEY, rarity TEXT UNIQUE)")
-    for i in range(len(rarity_list)):
-        cur.execute("INSERT OR IGNORE INTO Rarities (id,rarity) VALUES (?,?)",(i,rarity_list[i]))
     conn.commit()
+    cur.execute("SELECT COUNT(*) FROM Rarities")
+    rarities_count = cur.fetchone()[0]
+    if rarities_count < len(rarity_list):
+        for i in range(rarities_count, len(rarity_list)):
+            if total_count + new_count < 25:
+                cur.execute("INSERT OR IGNORE INTO Rarities (id,rarity) VALUES (?,?)",(i,rarity_list[i]))
+                conn.commit()
+                new_count += 1
+            else:
+                quit()
+    return new_count
 
 def create_fish_table(cur, conn, fish_dict, total_count):
+    new_count = 0
     cur.execute("CREATE TABLE IF NOT EXISTS Fish (fish_id INTEGER PRIMARY KEY, name TEXT, location_id INTEGER, rarity_id INTEGER, price INTEGER)")
     conn.commit()
+    cur.execute("SELECT COUNT(*) FROM Fish")
+    fish_count = cur.fetchone()[0]
     for fish in fish_dict:
         fish_id = fish_dict[fish]['id']
-        name = fish_dict[fish]['name']['name-USen']
-        location = fish_dict[fish]['availability']['location']
-        cur.execute('SELECT id FROM Locations WHERE Locations.location = "' + location + '"')
-        for row in cur:
-            location_id = row[0]
-        rarity = fish_dict[fish]['availability']['rarity']
-        cur.execute('SELECT id FROM Rarities WHERE Rarities.rarity = "' + rarity + '"')
-        for row in cur:
-            rarity_id = row[0]
-        price = int(fish_dict[fish]['price'])
-        cur.execute('INSERT OR IGNORE INTO Fish (fish_id, name, location_id, rarity_id, price) VALUES (?, ?, ?, ?, ?)', (fish_id, name, location_id, rarity_id, price))
-        conn.commit()
+        if (fish_id in range(fish_count, len(fish_dict) + 1)) and (total_count + new_count < 25):
+            name = fish_dict[fish]['name']['name-USen']
+            location = fish_dict[fish]['availability']['location']
+            cur.execute('SELECT id FROM Locations WHERE Locations.location = "' + location + '"')
+            for row in cur:
+                location_id = row[0]
+            rarity = fish_dict[fish]['availability']['rarity']
+            cur.execute('SELECT id FROM Rarities WHERE Rarities.rarity = "' + rarity + '"')
+            for row in cur:
+                rarity_id = row[0]
+            price = int(fish_dict[fish]['price'])
+            cur.execute('INSERT OR IGNORE INTO Fish (fish_id, name, location_id, rarity_id, price) VALUES (?, ?, ?, ?, ?)', (fish_id, name, location_id, rarity_id, price))
+            conn.commit()
+            new_count += 1
+        else:
+            quit()
+    return new_count
 
 def main():
     cur, conn = open_database('acnh.db')
@@ -171,9 +197,9 @@ def main():
     # print(total_count)
     total_count += create_villagers_table(cur, conn, villagers_dict, total_count)
     fish_dict = get_fish()
-    create_location_table(cur, conn, fish_dict, total_count)
-    create_rarity_table(cur, conn, fish_dict, total_count)
-    create_fish_table(cur, conn, fish_dict, total_count)
+    total_count += create_location_table(cur, conn, fish_dict, total_count)
+    total_count += create_rarity_table(cur, conn, fish_dict, total_count)
+    total_count += create_fish_table(cur, conn, fish_dict, total_count)
 
 if __name__ == "__main__":
     main()
