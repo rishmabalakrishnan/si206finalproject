@@ -14,29 +14,52 @@ def get_villagers():
     villagers_dict = json.loads(r)
     return villagers_dict
 
-def create_personalities_table(cur, conn, villagers_dict):
+def create_personalities_table(cur, conn, villagers_dict, total_count):
+    new_count = 0
     personalities_list = []
     for villager in villagers_dict:
         personality = villagers_dict[villager]['personality']
         if personality not in personalities_list:
             personalities_list.append(personality)
+    # print(len(personalities_list))
     cur.execute("CREATE TABLE IF NOT EXISTS Personalities (id INTEGER PRIMARY KEY, personality TEXT UNIQUE)")
-    for i in range(len(personalities_list)):
-        cur.execute("INSERT OR IGNORE INTO Personalities (id,personality) VALUES (?,?)",(i,personalities_list[i]))
     conn.commit()
+    cur.execute("SELECT COUNT(*) FROM Personalities")
+    personalities_count = cur.fetchone()[0]
+    if personalities_count < len(personalities_list):
+        for i in range(personalities_count, len(personalities_list)):
+        # print(total_count + new_count)
+            if total_count + new_count < 25:
+                cur.execute("INSERT OR IGNORE INTO Personalities (id,personality) VALUES (?,?)",(i,personalities_list[i]))
+                new_count += 1
+                conn.commit()
+    # print(new_count)
+    return new_count
 
-def create_species_table(cur, conn, villagers_dict):
+def create_species_table(cur, conn, villagers_dict, total_count):
+    # print(total_count)
+    new_count = 0
     species_list = []
     for villager in villagers_dict:
         species = villagers_dict[villager]['species']
         if species not in species_list:
             species_list.append(species)
+    # print(len(species_list))
     cur.execute("CREATE TABLE IF NOT EXISTS Species (id INTEGER PRIMARY KEY, species TEXT UNIQUE)")
-    for i in range(len(species_list)):
-        cur.execute("INSERT OR IGNORE INTO Species (id,species) VALUES (?,?)",(i,species_list[i]))
     conn.commit()
+    cur.execute("SELECT COUNT(*) FROM Species")
+    species_count = cur.fetchone()[0]
+    if species_count < len(species_list):
+        for i in range(species_count, len(species_list)):
+        # print(total_count + new_count)
+            if total_count + new_count < 25:
+                cur.execute("INSERT OR IGNORE INTO Species (id,species) VALUES (?,?)",(i,species_list[i]))
+                conn.commit()
+                new_count += 1
+    print(new_count)
+    return new_count
 
-def create_villagers_table(cur, conn, villagers_dict):
+def create_villagers_table(cur, conn, villagers_dict, total_count):
     cur.execute("CREATE TABLE IF NOT EXISTS Villagers (villager_id INTEGER PRIMARY KEY, name TEXT, personality_id INTEGER, birthday TEXT, species_id INTEGER, gender INTEGER, catchphrase TEXT)")
     conn.commit()
     for villager in villagers_dict:
@@ -74,7 +97,7 @@ def get_fish():
     fish_dict = json.loads(r)
     return fish_dict
 
-def create_location_table(cur, conn, fish_dict):
+def create_location_table(cur, conn, fish_dict, total_count):
     locations_list = []
     for fish in fish_dict:
         location = fish_dict[fish]['availability']['location'].split()[0]
@@ -85,7 +108,7 @@ def create_location_table(cur, conn, fish_dict):
         cur.execute("INSERT OR IGNORE INTO Locations (id,location) VALUES (?,?)",(i,locations_list[i]))
     conn.commit()
 
-def create_rarity_table(cur, conn, fish_dict):
+def create_rarity_table(cur, conn, fish_dict, total_count):
     rarity_list = []
     for fish in fish_dict:
         rarity = fish_dict[fish]['availability']['rarity']
@@ -96,7 +119,7 @@ def create_rarity_table(cur, conn, fish_dict):
         cur.execute("INSERT OR IGNORE INTO Rarities (id,rarity) VALUES (?,?)",(i,rarity_list[i]))
     conn.commit()
 
-def create_fish_table(cur, conn, fish_dict):
+def create_fish_table(cur, conn, fish_dict, total_count):
     cur.execute("CREATE TABLE IF NOT EXISTS Fish (fish_id INTEGER PRIMARY KEY, name TEXT, location_id INTEGER, rarity_id INTEGER, price INTEGER)")
     conn.commit()
     for fish in fish_dict:
@@ -116,15 +139,31 @@ def create_fish_table(cur, conn, fish_dict):
 
 def main():
     cur, conn = open_database('acnh.db')
+    # cur.execute('SELECT COUNT(*) FROM Personalities')
+    # personalities_count = cur.fetchone()[0]
+    # cur.execute('SELECT COUNT(*) FROM Species')
+    # species_count = cur.fetchone()[0]
+    # cur.execute('SELECT COUNT(*) FROM Villagers')
+    # villagers_count = cur.fetchone()[0]
+    # cur.execute('SELECT COUNT(*) FROM Locations')
+    # locations_count = cur.fetchone()[0]
+    # cur.execute('SELECT COUNT(*) FROM Rarities')
+    # rarities_count = cur.fetchone()[0]
+    # cur.execute('SELECT COUNT(*) FROM Fish')
+    # fish_count = cur.fetchone()[0]
+    # total_count = personalities_count + species_count + villagers_count + locations_count + rarities_count + fish_count
     villagers_dict = get_villagers()
-    # print(villagers_dict)
-    create_personalities_table(cur, conn, villagers_dict)
-    create_species_table(cur, conn, villagers_dict)
-    create_villagers_table(cur, conn, villagers_dict)
+    total_count = 0
+    # maybe pass in total_count to all functions that add to the database and after every successful entry, increment total_count? then stop execution once total_count is 25
+    total_count += create_personalities_table(cur, conn, villagers_dict, total_count)
+    # print(total_count)
+    total_count += create_species_table(cur, conn, villagers_dict, total_count)
+    # print(total_count)
+    create_villagers_table(cur, conn, villagers_dict, total_count)
     fish_dict = get_fish()
-    create_location_table(cur, conn, fish_dict)
-    create_rarity_table(cur, conn, fish_dict)
-    create_fish_table(cur, conn, fish_dict)
+    create_location_table(cur, conn, fish_dict, total_count)
+    create_rarity_table(cur, conn, fish_dict, total_count)
+    create_fish_table(cur, conn, fish_dict, total_count)
 
 if __name__ == "__main__":
     main()
