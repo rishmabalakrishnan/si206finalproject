@@ -51,12 +51,31 @@ def create_villagers_table(cur, conn, villagers_dict):
         cur.execute('INSERT OR IGNORE INTO Villagers (villager_id, name, personality_id, birthday, species, gender, catchphrase) VALUES (?, ?, ?, ?, ?, ?, ?)', (villager_id, name, personality_id, birthday, species, gender, catchphrase))
         conn.commit()
 
+def get_fish():
+    r = requests.get("https://acnhapi.com/v1/fish").text
+    fish_dict = json.loads(r)
+    return fish_dict
+
+def create_fish_table(cur, conn, fish_dict):
+    cur.execute("CREATE TABLE IF NOT EXISTS Fish (fish_id INTEGER PRIMARY KEY, name TEXT, location TEXT, rarity TEXT, price INTEGER)")
+    conn.commit()
+    for fish in fish_dict:
+        fish_id = fish_dict[fish]['id']
+        name = fish_dict[fish]['name']['name-USen']
+        location = fish_dict[fish]['availability']['location']
+        rarity = fish_dict[fish]['availability']['rarity']
+        price = int(fish_dict[fish]['price'])
+        cur.execute('INSERT OR IGNORE INTO Fish (fish_id, name, location, rarity, price) VALUES (?, ?, ?, ?, ?)', (fish_id, name, location, rarity, price))
+        conn.commit()
+
 def main():
     cur, conn = open_database('acnh.db')
     villagers_dict = get_villagers()
     # print(villagers_dict)
     create_personalities_table(cur, conn, villagers_dict)
     create_villagers_table(cur, conn, villagers_dict)
+    fish_dict = get_fish()
+    create_fish_table(cur, conn, fish_dict)
 
 if __name__ == "__main__":
     main()
