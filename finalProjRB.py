@@ -37,7 +37,7 @@ def create_species_table(cur, conn, villagers_dict):
     conn.commit()
 
 def create_villagers_table(cur, conn, villagers_dict):
-    cur.execute("CREATE TABLE IF NOT EXISTS Villagers (villager_id INTEGER PRIMARY KEY, name TEXT, personality_id INTEGER, birthday TEXT, species TEXT, gender TEXT, catchphrase TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Villagers (villager_id INTEGER PRIMARY KEY, name TEXT, personality_id INTEGER, birthday TEXT, species_id INTEGER, gender INTEGER, catchphrase TEXT)")
     conn.commit()
     for villager in villagers_dict:
         # print(villagers_dict[villager])
@@ -54,12 +54,19 @@ def create_villagers_table(cur, conn, villagers_dict):
         # note: birthday is in the format d/m
         # print(birthday)
         species = villagers_dict[villager]['species']
+        cur.execute('SELECT id FROM Species WHERE Species.species = "' + species + '"')
+        for row in cur:
+            species_id = row[0]
         # print(species)
         gender = villagers_dict[villager]['gender']
+        if gender == 'Male':
+            gender = 0
+        else:
+            gender = 1
         # print(gender)
         catchphrase = villagers_dict[villager]['catch-phrase']
         # print(catchphrase)
-        cur.execute('INSERT OR IGNORE INTO Villagers (villager_id, name, personality_id, birthday, species, gender, catchphrase) VALUES (?, ?, ?, ?, ?, ?, ?)', (villager_id, name, personality_id, birthday, species, gender, catchphrase))
+        cur.execute('INSERT OR IGNORE INTO Villagers (villager_id, name, personality_id, birthday, species_id, gender, catchphrase) VALUES (?, ?, ?, ?, ?, ?, ?)', (villager_id, name, personality_id, birthday, species_id, gender, catchphrase))
         conn.commit()
 
 def get_fish():
@@ -90,15 +97,21 @@ def create_rarity_table(cur, conn, fish_dict):
     conn.commit()
 
 def create_fish_table(cur, conn, fish_dict):
-    cur.execute("CREATE TABLE IF NOT EXISTS Fish (fish_id INTEGER PRIMARY KEY, name TEXT, location TEXT, rarity TEXT, price INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Fish (fish_id INTEGER PRIMARY KEY, name TEXT, location_id INTEGER, rarity_id INTEGER, price INTEGER)")
     conn.commit()
     for fish in fish_dict:
         fish_id = fish_dict[fish]['id']
         name = fish_dict[fish]['name']['name-USen']
         location = fish_dict[fish]['availability']['location']
+        cur.execute('SELECT id FROM Locations WHERE Locations.location = "' + location + '"')
+        for row in cur:
+            location_id = row[0]
         rarity = fish_dict[fish]['availability']['rarity']
+        cur.execute('SELECT id FROM Rarities WHERE Rarities.rarity = "' + rarity + '"')
+        for row in cur:
+            rarity_id = row[0]
         price = int(fish_dict[fish]['price'])
-        cur.execute('INSERT OR IGNORE INTO Fish (fish_id, name, location, rarity, price) VALUES (?, ?, ?, ?, ?)', (fish_id, name, location, rarity, price))
+        cur.execute('INSERT OR IGNORE INTO Fish (fish_id, name, location_id, rarity_id, price) VALUES (?, ?, ?, ?, ?)', (fish_id, name, location_id, rarity_id, price))
         conn.commit()
 
 def main():
