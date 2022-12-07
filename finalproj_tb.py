@@ -107,6 +107,7 @@ def add_recipes_to_table (recipes_dict, cur, conn):
 def main():
     cur, conn = make_database('acnh.db')
     recipes_dict = get_recipes(api_key)
+    total_count = 0
     create_availability_table(recipes_dict, cur, conn)
     create_recipes_table(cur, conn)
     add_recipes_to_table(recipes_dict, cur, conn)
