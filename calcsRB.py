@@ -107,6 +107,7 @@ def villager_species_counts(cur, conn):
     
     print(species_dict)
     sorted_dict = dict(sorted(species_dict.items(), key=lambda item: item[1], reverse=True))
+    sorted_dict = dict(list(sorted_dict.items())[0: 5]) 
     print(sorted_dict)
     return sorted_dict
 
@@ -144,8 +145,11 @@ def output(personality_dict, species_dict, avg_fish_prices):
     for personality in personality_dict:
         fh.write(personality + ": " + str(personality_dict[personality]) + " villagers\n")
     fh.write("\nHere are the top 5 villager species by frequency:\n")
-    for i in range(5):
-        fh.write()
+    for species in species_dict:
+        fh.write(species + ": " + str(species_dict[species]) + " villagers\n")
+    fh.write("\nHere are the average selling prices for each rarity of fish:\n")
+    for rarity in avg_fish_prices:
+        fh.write(rarity + ": " + str(round(avg_fish_prices[rarity], 2)) + " bells\n")
     fh.close()
 
 def main():
