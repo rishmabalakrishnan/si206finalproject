@@ -8,51 +8,157 @@ def open_database(db_name):
     return cur, conn
     
 def villager_personality_counts(cur, conn):
-    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 0")
-    cranky_count = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 1")
-    jock_count = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 2")
-    peppy_count = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 3")
-    snooty_count = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 4")
-    normal_count = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 5")
-    smug_count = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 6")
-    lazy_count = cur.fetchone()[0]
-    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 7")
-    sisterly_count = cur.fetchone()[0]
     personalities_dict = {}
-    personalities_dict['cranky'] = cranky_count
-    personalities_dict['jock'] = jock_count
-    personalities_dict['peppy'] = peppy_count
-    personalities_dict['snooty'] = snooty_count
-    personalities_dict['normal'] = normal_count
-    personalities_dict['smug'] = smug_count
-    personalities_dict['lazy'] = lazy_count
-    personalities_dict['sisterly'] = sisterly_count
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 0")
+    personalities_dict['cranky'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 1")
+    personalities_dict['jock'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 2")
+    personalities_dict['peppy'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 3")
+    personalities_dict['snooty'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 4")
+    personalities_dict['normal'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 5")
+    personalities_dict['smug'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 6")
+    personalities_dict['lazy'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE personality_id = 7")
+    personalities_dict['sisterly'] = cur.fetchone()[0]
+    
+    
     print(personalities_dict)
     sorted_dict = dict(sorted(personalities_dict.items(), key=lambda item: item[1], reverse=True))
     print(sorted_dict)
     return sorted_dict
 
 def villager_species_counts(cur, conn):
+    species_dict = {}
     cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 0")
-    anteater_count = cur.fetchone()[0]
+    species_dict['anteater'] = cur.fetchone()[0]
     cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 1")
-    anteater_count = cur.fetchone()[0]
+    species_dict['bear'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 2")
+    species_dict['bird'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 3")
+    species_dict['bull'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 4")
+    species_dict['cat'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 5")
+    species_dict['cub'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 6")
+    species_dict['chicken'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 7")
+    species_dict['cow'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 8")
+    species_dict['alligator'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 9")
+    species_dict['deer'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 10")
+    species_dict['dog'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 11")
+    species_dict['duck'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 12")
+    species_dict['elephant'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 13")
+    species_dict['frog'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 14")
+    species_dict['goat'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 15")
+    species_dict['gorilla'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 16")
+    species_dict['hamster'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 17")
+    species_dict['hippo'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 18")
+    species_dict['horse'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 19")
+    species_dict['koala'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 20")
+    species_dict['kangaroo'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 21")
+    species_dict['lion'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 22")
+    species_dict['monkey'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 23")
+    species_dict['mouse'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 24")
+    species_dict['octopus'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 25")
+    species_dict['ostrich'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 26")
+    species_dict['eagle'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 27")
+    species_dict['penguin'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 28")
+    species_dict['pig'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 29")
+    species_dict['rabbit'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 30")
+    species_dict['rhino'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 31")
+    species_dict['sheep'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 32")
+    species_dict['squirrel'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 33")
+    species_dict['tiger'] = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 34")
+    species_dict['wolf'] = cur.fetchone()[0]
+    
+    print(species_dict)
+    sorted_dict = dict(sorted(species_dict.items(), key=lambda item: item[1], reverse=True))
+    print(sorted_dict)
+    return sorted_dict
 
+def avg_prices_by_rarity(cur, conn):
+    prices_dict = {}
+    cur.execute("SELECT price FROM Fish WHERE rarity_id = 0")
+    prices_dict['common'] = []
+    for row in cur:
+        prices_dict['common'].append(row[0])
+    cur.execute("SELECT price FROM Fish WHERE rarity_id = 1")
+    prices_dict['uncommon'] = []
+    for row in cur:
+        prices_dict['uncommon'].append(row[0])
+    cur.execute("SELECT price FROM Fish WHERE rarity_id = 2")
+    prices_dict['rare'] = []
+    for row in cur:
+        prices_dict['rare'].append(row[0])
+    cur.execute("SELECT price FROM Fish WHERE rarity_id = 3")
+    prices_dict['ultra-rare'] = []
+    for row in cur:
+        prices_dict['ultra-rare'].append(row[0])
+
+    print(prices_dict)
+    avg_prices = {}
+    avg_prices['common'] = sum(prices_dict['common']) / len(prices_dict['common'])
+    avg_prices['uncommon'] = sum(prices_dict['uncommon']) / len(prices_dict['uncommon'])
+    avg_prices['rare'] = sum(prices_dict['rare']) / len(prices_dict['rare'])
+    avg_prices['ultra-rare'] = sum(prices_dict['ultra-rare']) / len(prices_dict['ultra-rare'])
+    print(avg_prices)
+    return avg_prices
+
+def output(personality_dict, species_dict, avg_fish_prices):
+    fh = open("calculationsRB.txt", 'w')
+    fh.write("Here are all the villager personalities, in order from most frequent to least frequent:\n")
+    for personality in personality_dict:
+        fh.write(personality + ": " + str(personality_dict[personality]) + " villagers\n")
+    fh.write("\nHere are the top 5 villager species by frequency:\n")
+    for i in range(5):
+        fh.write()
+    fh.close()
 
 def main():
     # need to open database and form a connection
     cur, conn = open_database('acnh.db')
-    # calculations:
-    # 1. dictionary for most common villager species -> turn this into pie chart
-    # 2. dictionary for most common villager personalities -> turn this into pie chart
+    # calculations (write everything to txt file):
+    # 1. dictionary for most common villager personalities -> turn this into pie chart
+    # 2. dictionary for most common villager species -> turn this into bar chart
     # 3. avg selling price for each rarity of fish
     sorted_personality_dict = villager_personality_counts(cur, conn)
+    sorted_species_dict = villager_species_counts(cur, conn)
+    avg_fish_prices = avg_prices_by_rarity(cur, conn)
+    output(sorted_personality_dict, sorted_species_dict, avg_fish_prices)
 
 if __name__ == "__main__":
     main()
