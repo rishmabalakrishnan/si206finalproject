@@ -174,19 +174,6 @@ def create_fish_table(cur, conn, fish_dict, total_count):
 
 def main():
     cur, conn = open_database('acnh.db')
-    # cur.execute('SELECT COUNT(*) FROM Personalities')
-    # personalities_count = cur.fetchone()[0]
-    # cur.execute('SELECT COUNT(*) FROM Species')
-    # species_count = cur.fetchone()[0]
-    # cur.execute('SELECT COUNT(*) FROM Villagers')
-    # villagers_count = cur.fetchone()[0]
-    # cur.execute('SELECT COUNT(*) FROM Locations')
-    # locations_count = cur.fetchone()[0]
-    # cur.execute('SELECT COUNT(*) FROM Rarities')
-    # rarities_count = cur.fetchone()[0]
-    # cur.execute('SELECT COUNT(*) FROM Fish')
-    # fish_count = cur.fetchone()[0]
-    # total_count = personalities_count + species_count + villagers_count + locations_count + rarities_count + fish_count
     villagers_dict = get_villagers()
     print(len(villagers_dict))
     total_count = 0

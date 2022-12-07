@@ -24,10 +24,10 @@ def make_database(db_name):
     return cur, conn
 
 def create_recipes_table(cur, conn):
-    cur.execute("DROP TABLE IF EXISTS recipes")
-    cur.execute("CREATE TABLE IF NOT EXISTS recipes (item_id INTEGER PRIMARY KEY, name TEXT, sell_price INTEGER, wood INTEGER, hardwood INTEGER, softwood INTEGER, stone INTEGER, iron_nugget INTEGER, clay INTEGER, tree_branch INTEGER, other INTEGER)")
+    cur.execute("CREATE TABLE IF NOT EXISTS recipes (item_id INTEGER PRIMARY KEY, name TEXT, wood INTEGER, hardwood INTEGER, softwood INTEGER, stone INTEGER, iron_nugget INTEGER, clay INTEGER, tree_branch INTEGER)")
 
     conn.commit()
+
 
 def add_recipes_to_table (recipes_dict, cur, conn):
     
@@ -39,24 +39,22 @@ def add_recipes_to_table (recipes_dict, cur, conn):
         if "wall" in name or "flooring" in name or "wreath" in name or "wand" in name:
             continue
 
-        # if "flooring" in recipe["name"]:
-        #     continue
-
-        # if "wreath" in recipe["name"]:
-        #     continue
-
-        # if "wand" in recipe["name"]:
-        #     continue
-
-        sell_price = recipe["sell"]
-
         for material in recipe["materials"]:
+
+            material_list= ["wood", "hardwood", "softwood", "tree_branch", "clay", "iron_nugget", "stone"]
+            if material["name"] not in material_list:
+                continue
+            
+            # recipe_materials = {}
             if material["name"] == "wood":
+                # recipe_materials[material] = material["count"]
+                # print(recipe_materials[material])
                 wood = material["count"]
             else:
                 wood = 0
-            
-        # for material in recipe["materials"]:
+
+            # print(recipe_materials[wood])
+        
             if material["name"] == "hardwood":
                 hardwood = material["count"]
             else:
@@ -87,20 +85,26 @@ def add_recipes_to_table (recipes_dict, cur, conn):
             else:
                 tree_branch = 0
 
+            cur.execute("INSERT OR IGNORE INTO recipes (item_id, name, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch) VALUES (?,?,?,?,?,?,?,?,?)",(item_id, name, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch))
+        conn.commit()
 
-            material_list= ["wood", "hardwood", "softwood", "tree_branch", "clay", "iron_nugget", "stone"]
-            if material["name"] not in material_list:
-                continue
-            
-            # print(f'{name} {item_id} = {wood} wood, {tree_branch} branch, {stone} stone, {iron_nugget} nugget {hardwood} hardwood, {clay} clay {softwood} softwood')
-            # cur.execute("INSERT OR IGNORE INTO recipes (item_id, name, sell_price, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch, other) VALUES (?,?,?,?,?,?,?,?,?,?)",(item_id, name, sell_price, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch, other))
-        # conn.commit()
 
+def create_availability_table(recipes_dict, cur, conn):
+    avail_list = []
+    for recipe in recipes_dict:
+        availability = recipe["availability"][0]["from"]
+        if availability not in avail_list:
+            avail_list.append(availability)
+    cur.execute("CREATE TABLE IF NOT EXISTS availability (id INTEGER PRIMARY KEY, availability TEXT UNIQUE)")
+    for i in range(len(avail_list)):
+        cur.execute("INSERT OR IGNORE INTO availability (id, availability) VALUES (?,?)",(i,avail_list[i]))
+    conn.commit()
 
 def main():
     cur, conn = make_database('acnh.db')
     create_recipes_table(cur, conn)
     recipes_dict = get_recipes(api_key)
     add_recipes_to_table(recipes_dict, cur, conn)
+    create_availability_table(recipes_dict, cur, conn)
 
 main()
