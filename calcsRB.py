@@ -36,6 +36,7 @@ def villager_personality_counts(cur, conn):
     print(personalities_dict)
     sorted_dict = dict(sorted(personalities_dict.items(), key=lambda item: item[1], reverse=True))
     print(sorted_dict)
+    return sorted_dict
 
 def villager_species_counts(cur, conn):
     cur.execute("SELECT COUNT(*) FROM Villagers WHERE species_id = 0")
@@ -51,7 +52,7 @@ def main():
     # 1. dictionary for most common villager species -> turn this into pie chart
     # 2. dictionary for most common villager personalities -> turn this into pie chart
     # 3. avg selling price for each rarity of fish
-    villager_personality_counts(cur, conn)
+    sorted_personality_dict = villager_personality_counts(cur, conn)
 
 if __name__ == "__main__":
     main()
