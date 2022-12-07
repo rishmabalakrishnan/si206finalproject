@@ -89,10 +89,22 @@ def add_recipes_to_table (recipes_dict, cur, conn):
         conn.commit()
 
 
+def create_availability_table(recipes_dict, cur, conn):
+    avail_list = []
+    for recipe in recipes_dict:
+        availability = recipe["availability"][0]["from"]
+        if availability not in avail_list:
+            avail_list.append(availability)
+    cur.execute("CREATE TABLE IF NOT EXISTS availability (id INTEGER PRIMARY KEY, availability TEXT UNIQUE)")
+    for i in range(len(avail_list)):
+        cur.execute("INSERT OR IGNORE INTO availability (id, availability) VALUES (?,?)",(i,avail_list[i]))
+    conn.commit()
+
 def main():
     cur, conn = make_database('acnh.db')
     create_recipes_table(cur, conn)
     recipes_dict = get_recipes(api_key)
     add_recipes_to_table(recipes_dict, cur, conn)
+    create_availability_table(recipes_dict, cur, conn)
 
 main()
