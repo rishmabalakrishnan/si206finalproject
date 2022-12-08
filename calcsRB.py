@@ -1,5 +1,7 @@
 import sqlite3
 import os
+import matplotlib
+import matplotlib.pyplot as plt
 
 def open_database(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
@@ -152,17 +154,25 @@ def output(personality_dict, species_dict, avg_fish_prices):
         fh.write(rarity + ": " + str(round(avg_fish_prices[rarity], 2)) + " bells\n")
     fh.close()
 
+def personality_bar_chart(pers_dict):
+    personalities = list(pers_dict.keys())
+    frequencies = list(pers_dict.values())
+    plt.figure()
+    plt.bar(personalities, frequencies)
+    plt.show()
+
 def main():
     # need to open database and form a connection
     cur, conn = open_database('acnh.db')
     # calculations (write everything to txt file):
-    # 1. dictionary for most common villager personalities -> turn this into pie chart
-    # 2. dictionary for most common villager species -> turn this into bar chart
+    # 1. dictionary for most common villager personalities -> turn this into bar chart
+    # 2. dictionary for most common villager species -> turn this into pie chart
     # 3. avg selling price for each rarity of fish
     sorted_personality_dict = villager_personality_counts(cur, conn)
     sorted_species_dict = villager_species_counts(cur, conn)
     avg_fish_prices = avg_prices_by_rarity(cur, conn)
     output(sorted_personality_dict, sorted_species_dict, avg_fish_prices)
+    personality_bar_chart(sorted_personality_dict)
 
 if __name__ == "__main__":
     main()
