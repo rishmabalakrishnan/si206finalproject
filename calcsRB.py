@@ -183,7 +183,7 @@ def fish_line_graph(fish_dict):
     averages = list(fish_dict.values())
     plt.figure()
     fig, ax = plt.subplots()
-    ax.plot(rarities, averages)
+    ax.plot(rarities, averages, color='purple')
     ax.set_xlabel('Rarity of Fish')
     ax.set_ylabel('Average Selling Price (bells)')
     ax.set_title('Rarity vs Average Selling Price of Fish')
