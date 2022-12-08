@@ -158,7 +158,37 @@ def personality_bar_chart(pers_dict):
     personalities = list(pers_dict.keys())
     frequencies = list(pers_dict.values())
     plt.figure()
-    plt.bar(personalities, frequencies)
+    fig, ax = plt.subplots()
+    ax.set_xlabel('Personality')
+    ax.set_ylabel('Number of Villagers')
+    plt.bar(personalities, frequencies, color=['red', 'orange', 'yellow', 'green', 'blue', 'cyan', 'purple', 'black'])
+    plt.suptitle('Frequencies of Villager Personalities')
+    fig.savefig("personality_bar_chart.png")
+    plt.show()
+
+def species_bar_chart(spec_dict):
+    species = list(spec_dict.keys())
+    frequencies = list(spec_dict.values())
+    plt.figure()
+    fig, ax = plt.subplots()
+    ax.set_xlabel('Species')
+    ax.set_ylabel('Number of Villagers')
+    plt.bar(species, frequencies, color=['red', 'orange', 'yellow', 'green', 'blue'])
+    plt.suptitle('Top 5 Villager Species')
+    fig.savefig("species_bar_chart.png")
+    plt.show()
+
+def fish_line_graph(fish_dict):
+    rarities = list(fish_dict.keys())
+    averages = list(fish_dict.values())
+    plt.figure()
+    fig, ax = plt.subplots()
+    ax.plot(rarities, averages)
+    ax.set_xlabel('Rarity of Fish')
+    ax.set_ylabel('Average Selling Price (bells)')
+    ax.set_title('Rarity vs Average Selling Price of Fish')
+    ax.grid()
+    fig.savefig("fish_line_graph.png")
     plt.show()
 
 def main():
@@ -173,6 +203,8 @@ def main():
     avg_fish_prices = avg_prices_by_rarity(cur, conn)
     output(sorted_personality_dict, sorted_species_dict, avg_fish_prices)
     personality_bar_chart(sorted_personality_dict)
+    species_bar_chart(sorted_species_dict)
+    fish_line_graph(avg_fish_prices)
 
 if __name__ == "__main__":
     main()
