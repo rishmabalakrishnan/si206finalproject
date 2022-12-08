@@ -152,6 +152,8 @@ def create_fish_table(cur, conn, fish_dict, total_count):
     conn.commit()
     cur.execute("SELECT COUNT(*) FROM Fish")
     fish_count = cur.fetchone()[0]
+    if fish_count == 80:
+        quit()
     for fish in fish_dict:
         fish_id = fish_dict[fish]['id']
         if (fish_id in range(fish_count, len(fish_dict) + 1)) and (total_count + new_count < 25):
@@ -168,8 +170,7 @@ def create_fish_table(cur, conn, fish_dict, total_count):
             cur.execute('INSERT OR IGNORE INTO Fish (fish_id, name, location_id, rarity_id, price) VALUES (?, ?, ?, ?, ?)', (fish_id, name, location_id, rarity_id, price))
             conn.commit()
             new_count += 1
-        else:
-            quit()
+        
     return new_count
 
 def main():
