@@ -24,16 +24,28 @@ def make_database(db_name):
     return cur, conn
 
 
-def create_availability_table(recipes_dict, cur, conn):
+def create_availability_table(recipes_dict, cur, conn, total_count):
+    new_count = 0
     avail_list = []
     for recipe in recipes_dict:
         availability = recipe["availability"][0]["from"]
         if availability not in avail_list:
             avail_list.append(availability)
     cur.execute("CREATE TABLE IF NOT EXISTS availability (id INTEGER PRIMARY KEY, availability TEXT UNIQUE)")
-    for i in range(len(avail_list)):
-        cur.execute("INSERT OR IGNORE INTO availability (id, availability) VALUES (?,?)",(i,avail_list[i]))
     conn.commit()
+    cur.execute("SELECT COUNT(*) FROM availability")
+    availability_count = cur.fetchone()[0]
+    # print(availability_count)
+    if availability_count < len(avail_list):
+        for i in range(availability_count, len(avail_list)):
+            if total_count + new_count < 25:
+                cur.execute("INSERT OR IGNORE INTO availability (id, availability) VALUES (?,?)",(i,avail_list[i]))
+                conn.commit()
+                new_count += 1
+            else:
+                quit()
+    
+    return new_count
 
 
 def create_recipes_table(cur, conn):
@@ -41,8 +53,9 @@ def create_recipes_table(cur, conn):
 
     conn.commit()
 
-def add_recipes_to_table (recipes_dict, cur, conn):
-
+def make_insert_recipes_dict(recipes_dict, cur, conn):
+    insert_recipes = {}
+    
     for recipe in recipes_dict:
         item_id = recipe["serial_id"]
         name = recipe["name"]
@@ -100,16 +113,63 @@ def add_recipes_to_table (recipes_dict, cur, conn):
                 tree_branch = material["count"]
             else:
                 tree_branch = 0
+            # item_id = count
+            
+            # cur.execute("INSERT OR IGNORE INTO recipes (item_id, name, availability_id, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch) VALUES (?,?,?,?,?,?,?,?,?,?)" , (item_id, name, availability_id, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch))
+            insert_recipes[item_id] = []
+            insert_recipes[item_id].append(name)
+            insert_recipes[item_id].append(availability_id)
+            insert_recipes[item_id].append(wood)
+            insert_recipes[item_id].append(hardwood)
+            insert_recipes[item_id].append(softwood)
+            insert_recipes[item_id].append(stone)
+            insert_recipes[item_id].append(iron_nugget)
+            insert_recipes[item_id].append(clay)
+            insert_recipes[item_id].append(tree_branch)
+    count = 0
+    for item_id in insert_recipes:
+        insert_recipes[item_id].append(count)
+        count += 1
+    print(len(insert_recipes))
 
-            cur.execute("INSERT OR IGNORE INTO recipes (item_id, name, availability_id, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch) VALUES (?,?,?,?,?,?,?,?,?,?)" , (item_id, name, availability_id, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch))
-        conn.commit()
+    return insert_recipes
+
+
+def add_recipes_to_table (insert_recipes_dict, cur, conn, total_count):
+    new_count = 0
+    cur.execute("SELECT COUNT(*) FROM recipes")
+    recipes_count = cur.fetchone()[0]
+    for recipe in insert_recipes_dict:
+        # print(insert_recipes_dict[recipe])
+        # print("new count", new_count)
+        insert_item_id = insert_recipes_dict[recipe][-1]
+        if (insert_item_id in range(recipes_count, len(insert_recipes_dict) + 1)) and (total_count + new_count < 25):
+            insert_name = insert_recipes_dict[recipe][0]
+            insert_availability_id = insert_recipes_dict[recipe][1]
+            insert_wood = insert_recipes_dict[recipe][2]
+            insert_hardwood = insert_recipes_dict[recipe][3]
+            insert_softwood = insert_recipes_dict[recipe][4]
+            insert_stone = insert_recipes_dict[recipe][5]
+            insert_iron_nugget = insert_recipes_dict[recipe][6]
+            insert_clay = insert_recipes_dict[recipe][7]
+            insert_tree_branch = insert_recipes_dict[recipe][8]
+            cur.execute("INSERT OR IGNORE INTO recipes (item_id, name, availability_id, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch) VALUES (?,?,?,?,?,?,?,?,?,?)" , (insert_item_id, insert_name, insert_availability_id, insert_wood, insert_hardwood, insert_softwood, insert_stone, insert_iron_nugget, insert_clay, insert_tree_branch))
+            new_count += 1
+            conn.commit()
+        else:
+            continue
+    return new_count
 
 def main():
     cur, conn = make_database('acnh.db')
     recipes_dict = get_recipes(api_key)
     total_count = 0
-    create_availability_table(recipes_dict, cur, conn)
+    total_count += create_availability_table(recipes_dict, cur, conn, total_count)
+    print(total_count)
     create_recipes_table(cur, conn)
-    add_recipes_to_table(recipes_dict, cur, conn)
+    to_insert = make_insert_recipes_dict(recipes_dict, cur, conn)
+    # print(to_insert)
+    total_count += add_recipes_to_table(to_insert, cur, conn, total_count)
+    print("new", total_count)
 
 main()
