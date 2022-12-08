@@ -110,21 +110,27 @@ def get_vis2_values(top_methods):
     return value_list_2
 
 
-def create_visualizations(vis1_names, vis1_values, vis2_names, vis2_values):
- 
-    # visualization 1
-    plt.figure(figsize=(11,7))
-    plt.subplot(121)
-    plt.bar(vis1_names, vis1_values, color = ["sienna", "dimgray", "darkgray"])
-
-    # plt.set(xlabel = "materials", ylabel= "amount of recipes")
-    
-    # visualization 2
-    plt.subplot(122)
-    plt.scatter(vis2_names, vis2_values, color = "darksalmon")
-    plt.xticks(rotation = 30)
+def create_visualization1(vis1_names, vis1_values):
+    plt.figure()
+    fig, ax = plt.subplots()
+    ax.set_xlabel('Materials')
+    ax.set_ylabel('Number of Recipes')
+    plt.bar(vis1_names, vis1_values, color = ["dimgray", "sienna", "darkgray"])
+    plt.suptitle('Top Three Required Materials')
+    fig.savefig("materials_bar_chart.png")
     plt.show()
-
+    
+def create_visualization2(vis2_names, vis2_values):
+    plt.figure()
+    fig, ax = plt.subplots()
+    ax.set_xlabel('Availability')
+    ax.set_ylabel('Number of Recipes')
+    plt.scatter(vis2_names, vis2_values, color = "darksalmon")
+    plt.draw()
+    plt.xticks(rotation = 15)
+    plt.suptitle('Top Methods of Obtaining Recipes')
+    fig.savefig("availability_scatter_plot.png")
+    plt.show()
 
 def main():
     cur, conn = open_database('acnh.db')
@@ -141,9 +147,9 @@ def main():
     vis2_names = get_vis2_names(top_availability)
     vis2_values = get_vis2_values(top_availability)
 
-    create_visualizations(vis1_names, vis1_values, vis2_names, vis2_values)
+    create_visualization1(vis1_names, vis1_values)
+    create_visualization2(vis2_names, vis2_values)
 
-   
 
 
 if __name__ == "__main__":
