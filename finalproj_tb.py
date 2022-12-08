@@ -1,9 +1,7 @@
 import json
 import sqlite3
-# import unittest
 import os
 import requests
-
 
 api_key = "9d6fafde-d754-4e78-bdc3-1ff0e16d85d1"
 
