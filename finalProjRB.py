@@ -21,19 +21,16 @@ def create_personalities_table(cur, conn, villagers_dict, total_count):
         personality = villagers_dict[villager]['personality']
         if personality not in personalities_list:
             personalities_list.append(personality)
-    # print(len(personalities_list))
     cur.execute("CREATE TABLE IF NOT EXISTS Personalities (id INTEGER PRIMARY KEY, personality TEXT UNIQUE)")
     conn.commit()
     cur.execute("SELECT COUNT(*) FROM Personalities")
     personalities_count = cur.fetchone()[0]
     if personalities_count < len(personalities_list):
         for i in range(personalities_count, len(personalities_list)):
-        # print(total_count + new_count)
             if total_count + new_count < 25:
                 cur.execute("INSERT OR IGNORE INTO Personalities (id,personality) VALUES (?,?)",(i,personalities_list[i]))
                 new_count += 1
                 conn.commit()
-    # print(new_count)
     return new_count
 
 def create_species_table(cur, conn, villagers_dict, total_count):
