@@ -33,7 +33,6 @@ def create_availability_table(recipes_dict, cur, conn, total_count):
     conn.commit()
     cur.execute("SELECT COUNT(*) FROM availability")
     availability_count = cur.fetchone()[0]
-    # print(availability_count)
     if availability_count < len(avail_list):
         for i in range(availability_count, len(avail_list)):
             if total_count + new_count < 25:
@@ -68,11 +67,6 @@ def make_insert_recipes_dict(recipes_dict, cur, conn):
         material_list= ["wood", "hardwood", "softwood", "tree branch", "clay", "iron nugget", "stone"]
 
         for material in recipe["materials"]:
-        #     material_name = material["name"]
-        #     material_count = material['count']
-        #     if material_name in material_list:
-        #         recipe_materials[material_name] = material_count #recipe_materials.get(material_name, 0) + 1 
-        # print(recipe_materials)
 
             if material["name"] not in material_list:
                 continue
@@ -111,9 +105,7 @@ def make_insert_recipes_dict(recipes_dict, cur, conn):
                 tree_branch = material["count"]
             else:
                 tree_branch = 0
-            # item_id = count
             
-            # cur.execute("INSERT OR IGNORE INTO recipes (item_id, name, availability_id, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch) VALUES (?,?,?,?,?,?,?,?,?,?)" , (item_id, name, availability_id, wood, hardwood, softwood, stone, iron_nugget, clay, tree_branch))
             insert_recipes[item_id] = []
             insert_recipes[item_id].append(name)
             insert_recipes[item_id].append(availability_id)
@@ -138,8 +130,6 @@ def add_recipes_to_table (insert_recipes_dict, cur, conn, total_count):
     cur.execute("SELECT COUNT(*) FROM recipes")
     recipes_count = cur.fetchone()[0]
     for recipe in insert_recipes_dict:
-        # print(insert_recipes_dict[recipe])
-        # print("new count", new_count)
         insert_item_id = insert_recipes_dict[recipe][-1]
         if (insert_item_id in range(recipes_count, len(insert_recipes_dict) + 1)) and (total_count + new_count < 25):
             insert_name = insert_recipes_dict[recipe][0]
@@ -166,7 +156,6 @@ def main():
     print(total_count)
     create_recipes_table(cur, conn)
     to_insert = make_insert_recipes_dict(recipes_dict, cur, conn)
-    # print(to_insert)
     total_count += add_recipes_to_table(to_insert, cur, conn, total_count)
     print("new", total_count)
 
