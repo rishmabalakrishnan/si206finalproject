@@ -1,0 +1,22 @@
+Here are all the villager personalities, in order from most frequent to least frequent:
+lazy: 60 villagers
+normal: 59 villagers
+cranky: 55 villagers
+jock: 55 villagers
+snooty: 55 villagers
+peppy: 49 villagers
+smug: 34 villagers
+sisterly: 24 villagers
+
+Here are the top 5 villager species by frequency:
+cat: 23 villagers
+rabbit: 20 villagers
+frog: 18 villagers
+squirrel: 18 villagers
+duck: 17 villagers
+
+Here are the average selling prices for each rarity of fish:
+common: 742.68 bells
+uncommon: 3721.43 bells
+rare: 8923.08 bells
+ultra-rare: 15000.0 bells
